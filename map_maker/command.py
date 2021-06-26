@@ -50,7 +50,7 @@ class Command(object):
         self.application = None
         return
 
-    def parameters(self):
+    def parameters(self) -> dict:
 
         command_description = 'Read CSV format weather stations ' \
             + ' location file ' \
