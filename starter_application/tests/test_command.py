@@ -18,8 +18,8 @@ from command import main, Command
 def minimal_parameters():
 
     parameters = {
-        'INPUT_FILE_NAME': 'weather_station_records.txt',
-        'OUTPUT_FILE_NAME': 'weather_station_trends.dot'
+        'input_file_path': 'weather_station_records.txt',
+        'output_file_path': 'weather_station_trends.dot'
     }
     return parameters
 

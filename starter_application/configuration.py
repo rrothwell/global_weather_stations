@@ -2,7 +2,7 @@
 
 class Configuration():
 
-    def __init__(self, parameters={}):
+    def __init__(self, parameters: dict):
         self._label = 'weather_trends'
         self.parameters = parameters
 
