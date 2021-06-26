@@ -2,8 +2,7 @@
 
 ## Intent
 
-The provided code reads NOAA data files so as to provide a test bed for 
-various data analysis and visualisation procedures. 
+The provided code reads NOAA data files. This is intended to provide a test bed for various data analysis and visualisation procedures. 
 
 The results can be applied to establish the
 quality of the raw data, 
