@@ -28,7 +28,7 @@ with temperature trends observed on a continent, country and regional level.
 It is these local temperature trends that are of general interest 
 to the human population, due to its effect on weather and agriculture.
 
-Its is hoped to provide intermediate results from the investigation to compare the impact of various processing steps.
+There are plans to provide intermediate results from the investigation to compare the impact of various processing steps.
 
 ## The Source Code
 
