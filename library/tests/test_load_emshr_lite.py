@@ -224,7 +224,7 @@ def test_load_opens_empty_file(mocker):
         
 def test_load_opens_oneline_file(mocker):
     
-    with patch("builtins.open", mock_open(read_data='datadatadata')) as mock_file:
+    with patch("builtins.open", mock_open(read_data='heading\nseparator\ndatadatadata')) as mock_file:
         config = mocker.MagicMock()    
         config.input_file_path = './emshr_lite.txt'
 
@@ -239,7 +239,7 @@ def test_load_opens_oneline_file(mocker):
         
 def test_load_opens_twoline_file_with_different_station(mocker):
     
-    with patch("builtins.open", mock_open(read_data='datadatadata\ndatadatadata1')) as mock_file:
+    with patch("builtins.open", mock_open(read_data='heading\nseparator\ndatadatadata\ndatadatadata1')) as mock_file:
         config = mocker.MagicMock()    
         config.input_file_path = './emshr_lite.txt'
 
@@ -255,7 +255,7 @@ def test_load_opens_twoline_file_with_different_station(mocker):
         
 def test_load_opens_twoline_file_with_same_station(mocker):
     
-    with patch("builtins.open", mock_open(read_data='datadatadata\ndatadatadata')) as mock_file:
+    with patch("builtins.open", mock_open(read_data='heading\nseparator\ndatadatadata\ndatadatadata')) as mock_file:
         config = mocker.MagicMock()    
         config.input_file_path = './emshr_lite.txt'
 
@@ -271,7 +271,7 @@ def test_load_opens_twoline_file_with_same_station(mocker):
         
 def test_load_calls_extract_metadata_for_oneline(mocker):
     
-    with patch("builtins.open", mock_open(read_data='datadatadata')):
+    with patch("builtins.open", mock_open(read_data='heading\nseparator\ndatadatadata')):
         config = mocker.MagicMock()    
         config.input_file_path = './emshr_lite.txt'
 
@@ -287,7 +287,7 @@ def test_load_calls_extract_metadata_for_oneline(mocker):
         
 def test_load_calls_extract_metadata_for_twolines_with_different_station(mocker):
     
-    with patch("builtins.open", mock_open(read_data='datadatadata\ndatadatadata1')):
+    with patch("builtins.open", mock_open(read_data='heading\nseparator\ndatadatadata\ndatadatadata1')):
         config = mocker.MagicMock()    
         config.input_file_path = './emshr_lite.txt'
 
@@ -307,7 +307,7 @@ def test_load_calls_extract_metadata_for_twolines_with_different_station(mocker)
         
 def test_load_calls_extract_metadata_for_twolines_with_same_station(mocker):
     
-    with patch("builtins.open", mock_open(read_data='datadatadata\ndatadatadata1')):
+    with patch("builtins.open", mock_open(read_data='heading\nseparator\ndatadatadata\ndatadatadata1')):
         config = mocker.MagicMock()    
         config.input_file_path = './emshr_lite.txt'
 
@@ -327,7 +327,7 @@ def test_load_calls_extract_metadata_for_twolines_with_same_station(mocker):
         
 def test_load_populates_metadatas_for_oneline(mocker):
     
-    with patch("builtins.open", mock_open(read_data='1000')):
+    with patch("builtins.open", mock_open(read_data='heading\nseparator\n1000')):
         config = mocker.MagicMock()    
         config.input_file_path = './emshr_lite.txt'
 
@@ -344,7 +344,7 @@ def test_load_populates_metadatas_for_oneline(mocker):
         
 def test_load_populates_metadatas_for_twolines_different_station(mocker):
     
-    with patch("builtins.open", mock_open(read_data='1000\n1001')):
+    with patch("builtins.open", mock_open(read_data='heading\nseparator\n1000\n1001')):
         config = mocker.MagicMock()    
         config.input_file_path = './emshr_lite.txt'
 
@@ -366,7 +366,7 @@ def test_load_populates_metadatas_for_twolines_different_station(mocker):
         
 def test_load_populates_metadatas_for_twolines_same_station(mocker):
     
-    with patch("builtins.open", mock_open(read_data='1000\n1001')):
+    with patch("builtins.open", mock_open(read_data='heading\nseparator\n1000\n1001')):
         config = mocker.MagicMock()    
         config.input_file_path = './emshr_lite.txt'
 

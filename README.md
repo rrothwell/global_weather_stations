@@ -55,6 +55,7 @@ The code repository contains the following:
 1. A folder of files to act as a copy, paste and rename starting point for a new application (starter_application).
 1. A number of folders containing apps that are complete or in development (map_maker).
 1. A folder containing python modules that are shared between apps (library).
+1. A folder collecting the documentation describing the results of various coding experients, including graph plots.
 1. A folder for log files (logs). These log files may need to be created by the end user. They are not committed to the repository.
  
 ## Application Structure
@@ -73,3 +74,9 @@ On MacOS the required python version is installed using homebrew.
 As the apps are python apps, dependencies are managed by pip. The dependencies are installed within a virtenv to ensure isolation from 
 the local machine.
 
+The modules required by the apps include:
+- DateTimeRange
+
+The modules required by the development process include:
+- pytest
+- pytest-mock

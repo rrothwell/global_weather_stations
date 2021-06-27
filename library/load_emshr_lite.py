@@ -24,32 +24,32 @@ class LoadEMSHRLite(object):
     """
 
     COLUMN_HEADINGS = \
-    'NCDC     BEG_DT   END_DT   COOP   WBAN  ICAO FAA   NWSLI ' \
-    'WMO   TRANS      GHCND       ' \
-    'STATION_NAME                                                ' \
-    '                                         ' \
-    'CC CTRY_NAME                           ' \
-    'ST COUNTY                              ' \
-    'CD UTC LAT_DEC   LON_DEC    LOC_PREC   ' \
-    'LAT_DMS       LON_DMS        ' \
-    'EL_GR_FT EL_GR_M  EL_AP_FT EL_AP_M  TYPE                       ' \
+    'NCDC     BEG_DT   END_DT   COOP   WBAN  ICAO FAA   NWSLI' \
+    ' WMO   TRANS      GHCND      ' \
+    ' STATION_NAME                                               ' \
+    '                                          ' \
+    ' CC CTRY_NAME                          ' \
+    ' ST COUNTY                             ' \
+    ' CD UTC LAT_DEC   LON_DEC    LOC_PREC  ' \
+    ' LAT_DMS       LON_DMS       ' \
+    ' EL_GR_FT EL_GR_M  EL_AP_FT EL_AP_M  TYPE                      ' \
     '                                                               ' \
     '           ' \
-    'RELOCATION                     GHCNMLT     IGRA        ' \
-    'HPD         '
+    ' RELOCATION                     GHCNMLT     IGRA       ' \
+    ' HPD        '
     
     COLUMN_UNDERLINES = \
-    '-------- -------- -------- ------ ----- ---- ----- ----- ----- ' \
-    '---------- ----------- ----------------------------------------' \
-    '------------------------------------------------------------ -- '\
-    '----------------------------------- -- ----------------------------------- ' \
-    '-- --- --------- ---------- ---------- ------------- -------------- ' \
-    '-------- -------- -------- -------- ' \
-    '-----------------------------------------------------------------' \
-    '----------------------------------- ------------------------------ ' \
-    '----------- ----------- ----------- '
+    '-------- -------- -------- ------ ----- ---- ----- ----- -----' \
+    ' ---------- ----------- ----------------------------------------' \
+    ' ------------------------------------------------------------ --' \
+    ' ----------------------------------- -- -----------------------------------' \
+    ' -- --- --------- ---------- ---------- ------------- --------------' \
+    ' -------- -------- -------- --------' \
+    ' -----------------------------------------------------------------' \
+    ' ----------------------------------- ------------------------------' \
+    ' ----------- ----------- -----------'
     
-    SELECTED_FIELDS = ['NCDC', 'BEG_DT', 'END_DT', 'STATION_NAME']
+    SELECTED_FIELDS = ['NCDC', 'BEG_DT', 'END_DT', 'STATION_NAME', 'LAT_DEC', 'LON_DEC']
 
 
     def __init__(self, config: Configuration):
@@ -102,11 +102,19 @@ class LoadEMSHRLite(object):
             column_format = '{}{}'.format(field_width, field_type)
             column_formats.append(column_format) 
             line_format = ''.join(column_formats)
-            #print(len(total_field_width, line_format)
-        return line_format
+        # print('Format: ', total_field_width, line_format)
+        return (total_field_width, line_format)
 
     def parse_line(self, line: str) -> dict:
-        field_struct = struct.Struct(self.line_format())
+        (total_field_width, line_format) = self.line_format()
+        line_length = len(line)
+        # The file's header separator widths do not match the 
+        # column widths, so we have to add a space to pad the last column.
+        # Otherwise the parser complains.
+        if line_length + 1 == total_field_width:
+            line = line + ' '             
+        # print("Line length: ", len(line))
+        field_struct = struct.Struct(line_format)
         line_bytes = bytes(line, 'utf-8')
         parsed_fields = field_struct.unpack(line_bytes)
         field_values = [bytes_value.decode() for bytes_value in parsed_fields]
@@ -117,8 +125,8 @@ class LoadEMSHRLite(object):
 
     def make_location(self, fields):
         # What to do about timezones?
-    # See: https://stackoverflow.com/
-    # questions/466345/converting-string-into-datetime
+        # See: https://stackoverflow.com/
+        # questions/466345/converting-string-into-datetime
         begin_str = fields['BEG_DT'].strip()
         end_str = fields['END_DT'].strip()
         date_format = '%Y%m%d'
@@ -139,7 +147,7 @@ class LoadEMSHRLite(object):
             'NCDC', 'BEG_DT', 'END_DT', 'STATION_NAME'
 
         """
-        fields = self.parse_line(line.rstrip())
+        fields = self.parse_line(line)
         ncdc = int(fields['NCDC'].strip())        
 
         metadata_update = None
@@ -161,13 +169,23 @@ class LoadEMSHRLite(object):
     
     def load(self) -> list:
         metadatas = []
+        line_index = 0
         with open(self.file_path, 'r') as data_file:
-            metadata = StationMetadata(0) # Dummy starting value.
+            metadata = StationMetadata() # Dummy starting value.
             for line in data_file:
-                # Remove any line ending and extract fields.
-                metadata_update = self.extract_metadata(metadata, line.rstrip())
-                if metadata_update != metadata:
-                    metadata = metadata_update
-                    metadatas.append(metadata)
+                if line_index == 0:
+                    # Skip column headers
+                    pass
+                elif line_index == 1:
+                    # Skip separator line
+                    pass
+                else:
+                    # Remove any line ending and extract fields.
+                    line = line.rstrip(r'\r\l')
+                    metadata_update = self.extract_metadata(metadata, line)
+                    if metadata_update != metadata:
+                        metadata = metadata_update
+                        metadatas.append(metadata)
+                line_index += 1
             
         return metadatas
