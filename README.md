@@ -30,9 +30,9 @@ to the human population, due to its effect on weather and agriculture.
 
 There are plans to provide intermediate results from the investigation to compare the impact of various processing steps.
 
-## The Source Code
+## The Development Process
 
-The development environment is Eclipse with the PyDev plugin.
+The development environment is Eclipse CDT with the PyDev plugin.
 
 Code and document curation is via git.
 
@@ -45,4 +45,31 @@ The code is quite complicated in its structure, so it's not for amateur use.
 A starter application is provided for those who wish to experiment with the code. A dependency injection philosopy is adhered to so as to encourage experimentation.
 
 Eventually a packaging step will be added so the code can be run as a simple executable.
+
+## Project Manifest
+
+The code repository contains the following:
+1. Eclipse and PyDev project files. These are compatible with Eclipse 4.2 and PyDev 8.3.
+1. Wrapper scripts written in Bash (wrapper_scripts).
+1. Representative input data files (station_metadata).
+1. A folder of files to act as a copy, paster and rename starting point for a new application.
+1. A number of folders containing apps that are complete or in development. This includes: map_maker.
+1. A folder containing pytyhon modules that are shared between apps.
+1. A folder for log files. These log files may need to be created by the end user. They are not committed to the repository.
  
+## Application Structure
+
+Within each app folder the foolwoing files are found by convention:
+1. command. This is the main entry point for the python code.
+1. configuration. This encapsulates all of the app settings. It can be populated by command line arguments, settings files, credentials files, etc..
+1. builder. This constructs the application from class instances using a poor mans's dependency injection philosophy.
+1. application. This represents the running code and it is populated with other class instances by builder.
+1. tests. This is a folder that ensures the app is built sucessfully from it's components.
+
+## Application Dependencies
+
+On MacOS the required python version is installed using homebrew.
+
+As the apps are python apps, dependencies are managed by pip. The dependencies are installed within a virtenv to ensure isolation from 
+the local machine.
+
