@@ -52,19 +52,19 @@ The code repository contains the following:
 1. Eclipse and PyDev project files. These are compatible with Eclipse 4.2 and PyDev 8.3.
 1. Wrapper scripts written in Bash (wrapper_scripts).
 1. Representative input data files (station_metadata).
-1. A folder of files to act as a copy, paster and rename starting point for a new application.
-1. A number of folders containing apps that are complete or in development. This includes: map_maker.
-1. A folder containing pytyhon modules that are shared between apps.
-1. A folder for log files. These log files may need to be created by the end user. They are not committed to the repository.
+1. A folder of files to act as a copy, paste and rename starting point for a new application (starter_application).
+1. A number of folders containing apps that are complete or in development (map_maker).
+1. A folder containing python modules that are shared between apps (library).
+1. A folder for log files (logs). These log files may need to be created by the end user. They are not committed to the repository.
  
 ## Application Structure
 
-Within each app folder the foolwoing files are found by convention:
+Within each app folder the following files are found by convention:
 1. command. This is the main entry point for the python code.
 1. configuration. This encapsulates all of the app settings. It can be populated by command line arguments, settings files, credentials files, etc..
-1. builder. This constructs the application from class instances using a poor mans's dependency injection philosophy.
+1. builder. This constructs the application from class instances using a poor man's dependency injection philosophy.
 1. application. This represents the running code and it is populated with other class instances by builder.
-1. tests. This is a folder that ensures the app is built sucessfully from it's components.
+1. tests. This is a folder containing unit tests that ensures the app is built sucessfully from it's components.
 
 ## Application Dependencies
 
