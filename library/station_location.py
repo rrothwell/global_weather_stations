@@ -8,7 +8,7 @@ Created on 22 Jun. 2021
 class StationLocation(object):
     '''
     A value object to record 
-    the location of a weather station over a period of time.
+    the location of a weather station at a period of time.
     '''
 
 

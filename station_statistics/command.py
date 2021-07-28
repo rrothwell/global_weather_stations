@@ -18,16 +18,16 @@ from library.logging_utilities import LoggingManager
 from library.logging_utilities import LOG_LEVEL_LOOKUP
 from library.logging_utilities import LOG_DIRECTORY_PATH
 
-from map_maker.configuration import Configuration
-from map_maker.builder import Builder
+from station_statistics.configuration import Configuration
+from station_statistics.builder import Builder
 
 '''
-Create map of global weather stations 
-by reading a CSV data file and generating a KML file.
+Create statistics for global weather stations 
+by reading a fixed field ASCII data file and generating a text file.
 =================================================
 
 This is the app entry point to be run from the command line.
-It accepts command-line paramters and then runs the app.
+It accepts command-line parameters and then runs the app.
 
 This command reads a local data file containing a list of 
 weather stations. 
@@ -39,36 +39,36 @@ Prerequisites:
 The weather station files have been stored in the local file system.
 
 Instructions: run via the wrapper script like:
-    /usr/local/bin/run_map_maker.sh
+    /usr/local/bin/run_statistics.sh
 '''
 
 
 class Command(object):
 
     def __init__(self):
-        self.MAP_NAME = 'map_maker'
+        self.STATISTICS_NAME = 'global_weather_station_statistics'
         self.application = None
         return
 
-    def parameters(self) -> dict:
+    def parameters(self):
 
-        command_description = 'Read CSV format weather stations ' \
-            + ' location file ' \
+        command_description = 'Read fixed field format station ' \
+            + ' records file ' \
             + ' from the local file system ' \
-            + 'and produce a KMP map file. '
+            + 'and produce a text output file. '
         parser = argparse.ArgumentParser(
             description=command_description)
 
-        param_help_name = 'File path of weather station location csv file.'
-        parser.add_argument('--input-file-name',
+        param_help_name = 'File path of weather station records fixed field file.'
+        parser.add_argument('--input_file_path',
                             nargs='?',
                             type=argparse.FileType('r'),
                             help=param_help_name,
                             default=sys.stdin
                             )
 
-        param_help_name = 'File path of weather station mao KML file.'
-        parser.add_argument('--output-file-name',
+        param_help_name = 'File path of weather station statistics text file.'
+        parser.add_argument('--output_file_path',
                             nargs='?',
                             type=argparse.FileType('w'),
                             help=param_help_name,
@@ -77,8 +77,8 @@ class Command(object):
 
         args = parser.parse_args()
         params = {
-            'INPUT_FILE_NAME': args.input_file_name,
-            'OUTPUT_FILE_NAME': args.output_file_name
+            'input_file_path': args.input_file_path.name,
+            'output_file_path': args.output_file_path.name
         }
         return params
 
@@ -105,7 +105,7 @@ class Command(object):
 
         global LOGGING_MANAGER
         LOGGING_MANAGER = LoggingManager(
-            self.MAP_NAME,
+            self.STATISTICS_NAME,
             logging_path,
             log_level
         )
@@ -131,7 +131,7 @@ class Command(object):
             f"{log_level_key}({log_level})."
         )
 
-        logger.info("Initialising KML map maker command.")
+        logger.info("Initialising trends plotter command.")
         logger.info(sys.version)
 
         self.application = Builder().compose(configuration)
@@ -143,7 +143,7 @@ class Command(object):
 
         start_command = datetime.now()
         logger.info(
-            f"Start map maker at: "
+            f"Start statistics collection at: "
             f"{start_command}"
         )
 
@@ -154,7 +154,7 @@ class Command(object):
             end_command - start_command
         ).seconds / 60.0
         logger.info(
-            f"End map maker at: {end_command}, "
+            f"End statistics collection at: {end_command}, "
             f"with duration {duration_minutes:.2f} minutes. ")
 
 

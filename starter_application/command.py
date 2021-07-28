@@ -18,8 +18,8 @@ from library.logging_utilities import LoggingManager
 from library.logging_utilities import LOG_LEVEL_LOOKUP
 from library.logging_utilities import LOG_DIRECTORY_PATH
 
-from configuration import Configuration
-from builder import Builder
+from starter_application.configuration import Configuration
+from starter_application.builder import Builder
 
 '''
 Starter application.

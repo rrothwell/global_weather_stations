@@ -7,7 +7,10 @@ Created on 27 Jun. 2021
 import pytest
 import os
 
-from configuration import Configuration
+from datetime import datetime
+from datetimerange import DateTimeRange 
+
+from library.configuration import Configuration
 from library.load_emshr_lite import LoadEMSHRLite
 
 
@@ -66,13 +69,19 @@ def test_loader(loader):
     assert len(metadatas[0].locations) == 9
     assert metadatas[0].locations[0].coordinates == (44.58333, -124.05)
     assert metadatas[0].locations[8].coordinates == (44.58333, -124.05)
-    assert metadatas[0].locations[0].date_range == (44.58333, -124.05)
-    assert metadatas[0].locations[8].date_range == (44.58333, -124.05)
+    assert metadatas[0].locations[0].date_range == \
+        DateTimeRange(datetime(1949, 7, 13), datetime(1950, 11, 15))
+    assert metadatas[0].locations[8].date_range == \
+        DateTimeRange(datetime(1988, 5, 1), datetime(9999, 12, 31))
 
+    # The last/most recent name is always used.
+    # Hence GUSTAVUS AP and not GUSTAVUS.
     assert metadatas[1].ncdc == 10000158
     assert len(metadatas[1].locations) == 10
     assert metadatas[1].name == 'GUSTAVUS AP'
     assert metadatas[1].locations[0].coordinates == (58.416667, -135.7)
     assert metadatas[1].locations[9].coordinates == (58.41667,  -135.7)
-    assert metadatas[1].locations[0].date_range == (58.416667, -135.7)
-    assert metadatas[1].locations[9].date_range == (58.41667,  -135.7)
+    assert metadatas[1].locations[0].date_range == \
+        DateTimeRange(datetime(1923, 4, 1), datetime(1926, 1, 31))
+    assert metadatas[1].locations[9].date_range == \
+        DateTimeRange(datetime(1988, 5, 17), datetime(1988, 9, 7))

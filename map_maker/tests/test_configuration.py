@@ -3,7 +3,7 @@ Created on 23 Jun. 2021
 
 @author: richardrothwell
 '''
-from configuration import Configuration
+from map_maker.configuration import Configuration
 
 
 def test_construction():

@@ -1,5 +1,5 @@
 
-from application import Application
+from map_maker.application import Application
 
 
 '''
@@ -7,7 +7,7 @@ Builder assembles an app
 by injecting class instances according to the dependency graph.
 '''
 
-from configuration import Configuration
+from map_maker.configuration import Configuration
 
 class Builder():
 

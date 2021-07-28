@@ -8,18 +8,18 @@ import os
 
 from library.logging_utilities import LoggingManager
 
-from starter_application.configuration import Configuration
-from starter_application.builder import Builder
-from starter_application.application import Application
-from starter_application.command import main, Command
+from station_statistics.configuration import Configuration
+from station_statistics.builder import Builder
+from station_statistics.application import Application
+from station_statistics.command import main, Command
 
 
 @pytest.fixture
 def minimal_parameters():
 
     parameters = {
-        'input_file_path': 'weather_station_records.txt',
-        'output_file_path': 'weather_station_trends.dot'
+        'input_file_path': 'weather_station_locations.txt',
+        'output_file_path': 'weather_station_statistics.txt'
     }
     return parameters
 
@@ -186,7 +186,7 @@ def test_command_initialise_configuration_is_constructed(
         pass
 
     def mock_compose(self, config):
-        return Application()
+        return Application(None, None, None)
 
     monkeypatch.setattr(Command, 'parameters', mock_parameters)
     monkeypatch.setattr(
@@ -230,7 +230,7 @@ def test_command_initialise_application_is_built(
     def mock_compose(self, config):
         nonlocal build_call_count
         build_call_count += 1
-        return Application()
+        return Application(None, None, None)
 
     monkeypatch.setattr(Command, 'parameters', mock_parameters)
     monkeypatch.setattr(
@@ -262,7 +262,7 @@ def test_command_run(monkeypatch):
     monkeypatch.setattr(Application, 'run', mock_run_application)
 
     command = Command()
-    command.application = Application()
+    command.application = Application(None, None, None)
     command.run()
 
     assert run_application_call_count == 1

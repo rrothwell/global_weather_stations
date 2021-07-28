@@ -8,10 +8,10 @@ import os
 
 from library.logging_utilities import LoggingManager
 
-from configuration import Configuration
-from builder import Builder
-from application import Application
-from command import main, Command
+from map_maker.configuration import Configuration
+from map_maker.builder import Builder
+from map_maker.application import Application
+from map_maker.command import main, Command
 
 
 @pytest.fixture
