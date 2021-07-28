@@ -41,10 +41,11 @@ The command may be run by a bash wrapper script
 that excutes the python command within a virtualenv. 
 This is intended for distributing the software within a docker container.
 
-## Progress
+## Status
 
-| App | Explanation | Status |
-| ------ | ------ | ------ |
-| starter_application | Not intended to be executed. Used as a development starting point. | Working |
-| station_statistics | Produces a simple text file containing simple summary. | Working |
-| map_maker | Produces a KML file so as to display a map of stations. | Not working |
+This application is now functional and passes all tests.
+Typical results from executing the app are:
+```
+Station count: 144597
+Location count: 277296
+```

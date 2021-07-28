@@ -80,3 +80,13 @@ The modules required by the apps include:
 The modules required by the development process include:
 - pytest
 - pytest-mock
+
+
+## Progress
+
+| App | Explanation | Status |
+| ------ | ------ | ------ |
+| starter_application | Not intended to be executed. Used as a development starting point. | Working |
+| station_statistics | Produces a simple text file containing simple summary. | Working |
+| map_maker | Produces a KML file so as to display a map of stations. | Not working |
+
