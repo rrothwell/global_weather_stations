@@ -67,8 +67,8 @@ def test_loader(loader):
     assert metadatas[0].ncdc == 10000001
     assert metadatas[0].name == 'NEWPORT MUNICIPAL AP'
     assert len(metadatas[0].locations) == 9
-    assert metadatas[0].locations[0].coordinates == (44.58333, -124.05)
-    assert metadatas[0].locations[8].coordinates == (44.58333, -124.05)
+    assert metadatas[0].locations[0].coordinate() == (44.58333, -124.05)
+    assert metadatas[0].locations[8].coordinate() == (44.58333, -124.05)
     assert metadatas[0].locations[0].date_range == \
         DateTimeRange(datetime(1949, 7, 13), datetime(1950, 11, 15))
     assert metadatas[0].locations[8].date_range == \
@@ -79,8 +79,8 @@ def test_loader(loader):
     assert metadatas[1].ncdc == 10000158
     assert len(metadatas[1].locations) == 10
     assert metadatas[1].name == 'GUSTAVUS AP'
-    assert metadatas[1].locations[0].coordinates == (58.416667, -135.7)
-    assert metadatas[1].locations[9].coordinates == (58.41667,  -135.7)
+    assert metadatas[1].locations[0].coordinate() == (58.416667, -135.7)
+    assert metadatas[1].locations[9].coordinate() == (58.41667,  -135.7)
     assert metadatas[1].locations[0].date_range == \
         DateTimeRange(datetime(1923, 4, 1), datetime(1926, 1, 31))
     assert metadatas[1].locations[9].date_range == \

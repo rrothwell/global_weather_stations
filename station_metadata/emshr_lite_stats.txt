@@ -1,2 +1,3 @@
 Station count: 144597
-Location count: 277296
+Location count: 276376
+Valid period count: 144561

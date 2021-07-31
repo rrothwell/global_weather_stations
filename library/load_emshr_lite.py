@@ -13,6 +13,7 @@ from library.configuration import Configuration
 from library.column_layout import ColumnLayout
 from library.station_metadata import StationMetadata
 from library.station_location import StationLocation
+from library.misc_types import spherical_coordinate
 
 
 class LoadEMSHRLite(object):
@@ -52,12 +53,39 @@ class LoadEMSHRLite(object):
         # What to do about timezones?
         # See: https://stackoverflow.com/
         # questions/466345/converting-string-into-datetime
+        
+        # Some Colorado dates are inverted in time,
+        # so we check and fix this.
+        
+        # A large propertion of the date ranges 
+        # are missing a valid BEG_DT field. 
+        # It seems the beginning date string is 
+        # then set to the special value 00010101. 
+        # In other words year 1.
+        
+        # Some date ranges are terminated with a END_DT
+        # that looks lke: 99991231.
+        # This probably signifies that the location 
+        # is currently operational.
+        
+        # Sometimes the two DT fields look like this:
+        # 00010101 99991231.
+        # This would appear to mean that the station
+        # continues to operate, but has no begin date. 
+                   
         begin_str = fields['BEG_DT'].strip()
-        end_str = fields['END_DT'].strip()
+        end_str = fields['END_DT'].strip()            
+        
         date_format = '%Y%m%d'
         begin_date = datetime.strptime(begin_str, date_format)
         end_date = datetime.strptime(end_str, date_format)
-        date_range = DateTimeRange(begin_date, end_date)
+        if end_date >= begin_date:
+            date_range = DateTimeRange(begin_date, end_date)
+        else: 
+            date_range = DateTimeRange(end_date, begin_date)
+        
+        date_range.validate_time_inversion()
+
         
         # Coordinates of weather station.
         # High altitude balloon records have 
@@ -67,8 +95,8 @@ class LoadEMSHRLite(object):
         latitude = float(latitute_str) if latitute_str != '' else None
         longitude_str = fields['LON_DEC'].strip()
         longitude = float(longitude_str) if longitude_str != '' else None
-        coordinates = latitude, longitude
-        location = StationLocation(coordinates, date_range)
+        coordinate = spherical_coordinate(latitude, longitude)
+        location = StationLocation(coordinate, date_range)
         return location
 
     def extract_metadata(
@@ -239,5 +267,14 @@ class LoadEMSHRLite(object):
                             f"had bad data, causing a: {value_error}\n")
                         
                 line_index += 1
-            
+        
+        # Report on invalid location periods.
+        # This arises as some records (about 200)
+        # have duplicate locations based on the period.
+        failure_count = 1
+        for metadata in metadatas:
+            if not metadata.is_valid_periods():
+                logger.warn(
+                    f"Failure: {failure_count} - Metadata: {metadata}\n")
+                failure_count += 1
         return metadatas

@@ -6,6 +6,7 @@ Created on 22 Jun. 2021
 
 from unittest.mock import patch, mock_open, call
 from callee.types import IsA
+import pytest
 
 from datetime import datetime
 
@@ -140,8 +141,34 @@ def test_make_location(mocker) :
     expected_begin_datetime = datetime(1949, 7, 13)
     expected_end_datetime = datetime(1950, 11, 15)
     
-    assert station_location.coordinates[0] == 23.5
-    assert station_location.coordinates[1] == 187.2
+    assert station_location.coordinate().latitude == 23.5
+    assert station_location.coordinate().longitude == 187.2
+    assert station_location.date_range.start_datetime == expected_begin_datetime
+    assert station_location.date_range.end_datetime == expected_end_datetime
+    
+    
+def test_make_location_with_time_inversion(mocker) :
+    config = mocker.MagicMock()    
+    loader = LoadEMSHRLite(config)
+
+    # New station metadata.
+    # Inverted date order here.
+    fields = {
+        'NCDC': '123', 
+        'BEG_DT': '19501115', 
+        'END_DT': '19490713', 
+        'STATION_NAME': 'New York Airport',
+        'LAT_DEC': '23.5',
+        'LON_DEC': '187.2'
+    }
+
+    station_location = loader.make_location(fields)
+    
+    expected_begin_datetime = datetime(1949, 7, 13)
+    expected_end_datetime = datetime(1950, 11, 15)
+    
+    assert station_location.coordinate().latitude == 23.5
+    assert station_location.coordinate().longitude == 187.2
     assert station_location.date_range.start_datetime == expected_begin_datetime
     assert station_location.date_range.end_datetime == expected_end_datetime
     
@@ -450,4 +477,31 @@ def test_load_zaps_gremlins(mocker):
         loader.load()
        
         loader.zap_gremlins.assert_called_once_with(b'1000')
+        
+        
+@pytest.mark.skip(reason="sorting of the locations not required")
+def test_load_sorts_metadata_locations(mocker):
+    
+    with patch("builtins.open", mock_open(read_data=b'heading\nseparator\n1000\n')):
+        config = mocker.MagicMock()    
+        config.input_file_path = ''
+        loader = LoadEMSHRLite(config)               
 
+        return_values = [b'heading', b'separator', b'1000']
+        mocker.patch.object(loader, 'strip_end_of_line', 
+            autospec=True, side_effect=return_values)
+
+        mocker.patch.object(loader, 'zap_gremlins', 
+            autospec=True, return_value=b'')
+        
+        metadata = StationMetadata(123)
+        mocker.patch.object(metadata, 'sort_locations_by_start_date', 
+            autospec=True)
+
+        mocker.patch.object(loader, 'extract_metadata', 
+            autospec=True, return_value=metadata)
+        
+        loader.load()
+       
+        loader.zap_gremlins.assert_called_once_with(b'1000')
+        metadata.sort_locations_by_start_date.assert_called_once()

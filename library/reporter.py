@@ -3,7 +3,6 @@ Created on 27 Jul. 2021
 
 @author: richardrothwell
 '''
-from library.tests_integration.test_load_file import configuration
 
 class Reporter(object):
     '''
@@ -20,7 +19,8 @@ class Reporter(object):
         self.output_file_path = configuration.output_file_path
         self.ordering = [
             ('station_count', 'Station count: '),
-            ('location_count', 'Location count: ')
+            ('location_count', 'Location count: '),
+            ('valid_period_count', 'Valid period count: ')
         ]
 
     def report(self, statistics: dict):

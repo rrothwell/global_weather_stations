@@ -47,5 +47,6 @@ This application is now functional and passes all tests.
 Typical results from executing the app are:
 ```
 Station count: 144597
-Location count: 277296
+Location count: 276373
+Valid period count: 144561
 ```

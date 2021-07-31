@@ -131,7 +131,7 @@ class Command(object):
             f"{log_level_key}({log_level})."
         )
 
-        logger.info("Initialising trends plotter command.")
+        logger.info("Initialising station statistics command.")
         logger.info(sys.version)
 
         self.application = Builder().compose(configuration)
