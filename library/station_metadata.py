@@ -16,7 +16,7 @@ class StationMetadata(object):
     '''
 
 
-    def __init__(self, ncdc=0):
+    def __init__(self, ncdc, name = ''):
         '''
         Constructor
         '''
@@ -24,7 +24,7 @@ class StationMetadata(object):
         # No real use except for relating back to the original file.
         # Its was probably a database id.
         self.ncdc = ncdc
-        self.name = None
+        self.name = name
         self.COOP = None
         self.WBAN = None
         self.ICAO = None
@@ -50,7 +50,7 @@ class StationMetadata(object):
     # Trying out this base behavior stuff.
 
     def __repr__(self):
-        return 'NCDC: ' + str(self.ncdc)
+        return 'NCDC: ' + str(self.ncdc) + ', ' + 'Name: ' + self.name
 
     def __eq__(self, other):
         if not isinstance(other, StationMetadata):
@@ -94,4 +94,20 @@ class StationMetadata(object):
     def sort_locations_by_start_date(self):
         self.locations.sort(key=lambda x: x.period().start_datetime, reverse=False)
         
-    
+    def earliest_location(self):
+        '''
+        Searches list of locations for earliest actual start date.
+        Assumes locations list is already sorted earlest to latest.
+        '''
+        found_location = None
+        # Special date signifying thay there is no known start date
+        # for the location.
+        ancient_datetime = datetime(1,1,1)
+        for location in self.locations:
+            if location.period() \
+                and location.period().start_datetime \
+                and location.period().start_datetime  != ancient_datetime:
+                
+                found_location = location
+                break;
+        return found_location

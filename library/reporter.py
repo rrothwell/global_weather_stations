@@ -20,7 +20,8 @@ class Reporter(object):
         self.ordering = [
             ('station_count', 'Station count: '),
             ('location_count', 'Location count: '),
-            ('valid_period_count', 'Valid period count: ')
+            ('valid_period_count', 'Valid period count: '),
+            ('earliest_station', 'Earliest station: ...\n')
         ]
 
     def report(self, statistics: dict):

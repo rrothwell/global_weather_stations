@@ -219,7 +219,7 @@ class LoadEMSHRLite(object):
         buffer_size = file_line_length - len(b'\r\r\n')
         line_index = 0
         with open(self.file_path, 'rb') as data_file:
-            metadata = StationMetadata() # Dummy starting value.
+            metadata = StationMetadata(0) # Dummy starting value.
             header_line = []
             separator_line = []
             column_layout = ColumnLayout(['NCDC']) # Dummy column layout.

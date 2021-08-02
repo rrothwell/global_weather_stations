@@ -12,6 +12,7 @@ from library.collector import Collector
 from library.station_metadata import StationMetadata
 from library.station_location import StationLocation
 
+
 def test_construction():
     
     parameters = {'input_file_path': ''}    
@@ -24,81 +25,85 @@ def test_construction():
     assert collector.country_code is None
 
     
-def test_collect_statistics_when_no_metadata():
-
-    parameters = {'input_file_path': ''}    
-    configuration = Configuration(parameters)
-
-    collector = Collector(configuration)
+def test_collect_statistics_when_no_metadata(mocker):
     
     metadatas = []
+
+    configuration = mocker.MagicMock()    
+    collector = Collector(configuration)
+    metadata2 = StationMetadata(0)
+    mocker.patch.object(collector, 'earliest_station',
+                        autospec=True, return_value=metadata2)
+    
     statistics = collector.collect_statistics(metadatas)
         
     assert statistics['station_count'] == 0
     assert statistics['location_count'] == 0
 
     
-def test_collect_statistics_when_one_metadata():
-
-    parameters = {'input_file_path': ''}    
-    configuration = Configuration(parameters)
-
-    collector = Collector(configuration)
+def test_collect_statistics_when_one_metadata(mocker):
     
-    metadatas = [StationMetadata()]
+    metadatas = [StationMetadata(0)]
+
+    configuration = mocker.MagicMock()    
+    collector = Collector(configuration)
+    metadata2 = StationMetadata(0)
+    mocker.patch.object(collector, 'earliest_station',
+                        autospec=True, return_value=metadata2)
+    
     statistics = collector.collect_statistics(metadatas)
         
     assert statistics['station_count'] == 1
     assert statistics['location_count'] == 0
 
     
-def test_collect_statistics_when_one_metadata_one_location():
-
-    parameters = {'input_file_path': ''}    
-    configuration = Configuration(parameters)
-
-    collector = Collector(configuration)
+def test_collect_statistics_when_one_metadata_one_location(mocker):
     
-    metadata = StationMetadata()
+    metadata = StationMetadata(0)
     location = StationLocation(None, None)
     metadata.add_location(location)
+
     metadatas = [metadata]
+
+    configuration = mocker.MagicMock()    
+    collector = Collector(configuration)
+    metadata2 = StationMetadata(0)
+    mocker.patch.object(collector, 'earliest_station',
+                        autospec=True, return_value=metadata2)
+   
     statistics = collector.collect_statistics(metadatas)
         
     assert statistics['station_count'] == 1
     assert statistics['location_count'] == 1
 
     
-def test_collect_statistics_when_two_metadatas_two_locations():
+def test_collect_statistics_when_two_metadatas_two_locations(mocker):
 
-    parameters = {'input_file_path': ''}    
-    configuration = Configuration(parameters)
-
-    collector = Collector(configuration)
-    
-    metadata0 = StationMetadata()
+    metadata0 = StationMetadata(0)
     location0 = StationLocation(None, None)
     metadata0.add_location(location0)
 
-    metadata1 = StationMetadata()
+    metadata1 = StationMetadata(0)
     location1 = StationLocation(None, None)
     metadata1.add_location(location1)
 
     metadatas = [metadata0, metadata1]
+
+    configuration = mocker.MagicMock()    
+    collector = Collector(configuration)
+    metadata2 = StationMetadata(0)
+    mocker.patch.object(collector, 'earliest_station',
+                        autospec=True, return_value=metadata2)
+
     statistics = collector.collect_statistics(metadatas)
         
     assert statistics['station_count'] == 2
     assert statistics['location_count'] == 2
 
     
-def test_collect_statistics_when_two_metadatas_three_locations():
-
-    parameters = {'input_file_path': ''}    
-    configuration = Configuration(parameters)
-
-    collector = Collector(configuration)
+def test_collect_statistics_when_two_metadatas_three_locations(mocker):
     
-    metadata0 = StationMetadata()
+    metadata0 = StationMetadata(0)
 
     start_date0 = datetime(1991, 7, 3)
     end_date0 = datetime(1992, 6, 2)
@@ -106,7 +111,7 @@ def test_collect_statistics_when_two_metadatas_three_locations():
     location0 = StationLocation(None, period0)
     metadata0.add_location(location0)
 
-    metadata1 = StationMetadata()
+    metadata1 = StationMetadata(0)
 
     start_date1 = datetime(1993, 7, 3)
     end_date1 = datetime(1994, 6, 3)
@@ -121,29 +126,41 @@ def test_collect_statistics_when_two_metadatas_three_locations():
     metadata1.add_location(location2)
 
     metadatas = [metadata0, metadata1]
+
+    configuration = mocker.MagicMock()    
+    collector = Collector(configuration)
+    metadata2 = StationMetadata(0)
+    mocker.patch.object(collector, 'earliest_station',
+                        autospec=True, return_value=metadata2)
+
     statistics = collector.collect_statistics(metadatas)
         
     assert statistics['station_count'] == 2
     assert statistics['location_count'] == 3
+
     
 def test_collect_statistics_calls_metadata_zero_location_count(mocker):
 
-    configuration = mocker.MagicMock()    
-    collector = Collector(configuration)
-    
-    metadata0 = StationMetadata()
+    metadata0 = StationMetadata(0)
     mocker.patch.object(metadata0, 'location_count',
                         autospec=True, return_value=0)
     mocker.patch.object(metadata0, 'is_valid_periods',
                         autospec=True, return_value=True)
     
-    metadata1 = StationMetadata()
+    metadata1 = StationMetadata(0)
     mocker.patch.object(metadata1, 'location_count',
                         autospec=True, return_value=0)
     mocker.patch.object(metadata1, 'is_valid_periods',
                         autospec=True, return_value=True)
 
     metadatas = [metadata0, metadata1]
+
+    configuration = mocker.MagicMock()    
+    collector = Collector(configuration)
+    metadata2 = StationMetadata(0)
+    mocker.patch.object(collector, 'earliest_station',
+                        autospec=True, return_value=metadata2)
+
     statistics = collector.collect_statistics(metadatas)
     
     metadata0.location_count.assert_called_once()
@@ -153,35 +170,37 @@ def test_collect_statistics_calls_metadata_zero_location_count(mocker):
     
 def test_collect_statistics_calls_metadata_location_count(mocker):
 
-    configuration = mocker.MagicMock()    
-    collector = Collector(configuration)
-    
-    metadata0 = StationMetadata()
+    metadata0 = StationMetadata(0)
     mocker.patch.object(metadata0, 'location_count',
                         autospec=True, return_value=3)
     mocker.patch.object(metadata0, 'is_valid_periods',
                         autospec=True, return_value=False)
     
-    metadata1 = StationMetadata()
+    metadata1 = StationMetadata(0)
     mocker.patch.object(metadata1, 'location_count',
                         autospec=True, return_value=2)
     mocker.patch.object(metadata1, 'is_valid_periods',
                         autospec=True, return_value=False)
 
     metadatas = [metadata0, metadata1]
+
+    configuration = mocker.MagicMock()    
+    collector = Collector(configuration)
+    metadata2 = StationMetadata(0)
+    mocker.patch.object(collector, 'earliest_station',
+                        autospec=True, return_value=metadata2)
+
     statistics = collector.collect_statistics(metadatas)
     
     metadata0.location_count.assert_called_once()
     metadata1.location_count.assert_called_once()
         
     assert statistics['location_count'] == 5
+
     
 def test_collect_statistics_calls_metadata_is_no_valid_periods(mocker):
 
-    configuration = mocker.MagicMock()    
-    collector = Collector(configuration)
-    
-    metadata0 = StationMetadata()
+    metadata0 = StationMetadata(0)
     mocker.patch.object(metadata0, 'location_count',
                         autospec=True, return_value=0)
     mocker.patch.object(metadata0, 'is_valid_periods',
@@ -189,7 +208,7 @@ def test_collect_statistics_calls_metadata_is_no_valid_periods(mocker):
     mocker.patch.object(metadata0, 'dump',
                         autospec=True, return_value='dump0')
     
-    metadata1 = StationMetadata()
+    metadata1 = StationMetadata(0)
     mocker.patch.object(metadata1, 'location_count',
                         autospec=True, return_value=0)
     mocker.patch.object(metadata1, 'is_valid_periods',
@@ -198,6 +217,13 @@ def test_collect_statistics_calls_metadata_is_no_valid_periods(mocker):
                         autospec=True, return_value='dump0')
 
     metadatas = [metadata0, metadata1]
+
+    configuration = mocker.MagicMock()    
+    collector = Collector(configuration)
+    metadata2 = StationMetadata(0)
+    mocker.patch.object(collector, 'earliest_station',
+                        autospec=True, return_value=metadata2)
+
     statistics = collector.collect_statistics(metadatas)
     
     assert metadata0.is_valid_periods.call_count == 2
@@ -210,10 +236,7 @@ def test_collect_statistics_calls_metadata_is_no_valid_periods(mocker):
     
 def test_collect_statistics_calls_metadata_is_one_valid_periods(mocker):
 
-    configuration = mocker.MagicMock()    
-    collector = Collector(configuration)
-    
-    metadata0 = StationMetadata()
+    metadata0 = StationMetadata(0)
     mocker.patch.object(metadata0, 'location_count',
                         autospec=True, return_value=0)
     mocker.patch.object(metadata0, 'is_valid_periods',
@@ -221,7 +244,7 @@ def test_collect_statistics_calls_metadata_is_one_valid_periods(mocker):
     mocker.patch.object(metadata0, 'dump',
                         autospec=True, return_value='dump0')
     
-    metadata1 = StationMetadata()
+    metadata1 = StationMetadata(0)
     mocker.patch.object(metadata1, 'location_count',
                         autospec=True, return_value=0)
     mocker.patch.object(metadata1, 'is_valid_periods',
@@ -230,6 +253,13 @@ def test_collect_statistics_calls_metadata_is_one_valid_periods(mocker):
                         autospec=True, return_value='dump0')
 
     metadatas = [metadata0, metadata1]
+
+    configuration = mocker.MagicMock()    
+    collector = Collector(configuration)
+    metadata2 = StationMetadata(0)
+    mocker.patch.object(collector, 'earliest_station',
+                        autospec=True, return_value=metadata2)
+
     statistics = collector.collect_statistics(metadatas)
     
     assert metadata0.is_valid_periods.call_count == 2
@@ -239,13 +269,11 @@ def test_collect_statistics_calls_metadata_is_one_valid_periods(mocker):
     metadata1.dump.assert_not_called()
         
     assert statistics['valid_period_count'] == 1
+
     
 def test_collect_statistics_calls_metadata_is_all_valid_periods(mocker):
 
-    configuration = mocker.MagicMock()    
-    collector = Collector(configuration)
-    
-    metadata0 = StationMetadata()
+    metadata0 = StationMetadata(0)
     mocker.patch.object(metadata0, 'location_count',
                         autospec=True, return_value=0)
     mocker.patch.object(metadata0, 'is_valid_periods',
@@ -253,7 +281,7 @@ def test_collect_statistics_calls_metadata_is_all_valid_periods(mocker):
     mocker.patch.object(metadata0, 'dump',
                         autospec=True, return_value='dump0')
     
-    metadata1 = StationMetadata()
+    metadata1 = StationMetadata(0)
     mocker.patch.object(metadata1, 'location_count',
                         autospec=True, return_value=0)
     mocker.patch.object(metadata1, 'is_valid_periods',
@@ -262,6 +290,13 @@ def test_collect_statistics_calls_metadata_is_all_valid_periods(mocker):
                         autospec=True, return_value='dump0')
 
     metadatas = [metadata0, metadata1]
+
+    configuration = mocker.MagicMock()    
+    collector = Collector(configuration)
+    metadata2 = StationMetadata(0)
+    mocker.patch.object(collector, 'earliest_station',
+                        autospec=True, return_value=metadata2)
+
     statistics = collector.collect_statistics(metadatas)
     
     assert metadata0.is_valid_periods.call_count == 2
@@ -271,13 +306,11 @@ def test_collect_statistics_calls_metadata_is_all_valid_periods(mocker):
     metadata1.dump.assert_not_called()
         
     assert statistics['valid_period_count'] == 2
+
     
 def test_collect_statistics_calls_metadata_dump_once(mocker):
-
-    configuration = mocker.MagicMock()    
-    collector = Collector(configuration)
-    
-    metadata0 = StationMetadata()
+   
+    metadata0 = StationMetadata(0)
     mocker.patch.object(metadata0, 'location_count',
                         autospec=True, return_value=0)
     mocker.patch.object(metadata0, 'is_valid_periods',
@@ -285,7 +318,7 @@ def test_collect_statistics_calls_metadata_dump_once(mocker):
     mocker.patch.object(metadata0, 'dump',
                         autospec=True, return_value='dump0')
     
-    metadata1 = StationMetadata()
+    metadata1 = StationMetadata(0)
     mocker.patch.object(metadata1, 'location_count',
                         autospec=True, return_value=0)
     mocker.patch.object(metadata1, 'is_valid_periods',
@@ -294,8 +327,110 @@ def test_collect_statistics_calls_metadata_dump_once(mocker):
                         autospec=True, return_value='dump1')
 
     metadatas = [metadata0, metadata1]
+
+    configuration = mocker.MagicMock()    
+    collector = Collector(configuration)
+    metadata2 = StationMetadata(0)
+    mocker.patch.object(collector, 'earliest_station',
+                        autospec=True, return_value=metadata2)
+     
     collector.collect_statistics(metadatas)
     
     metadata0.dump.assert_called_once()
     metadata1.dump.assert_called_once()
 
+    
+def test_collect_statistics_calls_earliest_station(mocker):
+   
+    metadata0 = StationMetadata(0)
+    mocker.patch.object(metadata0, 'location_count',
+                        autospec=True, return_value=0)
+    mocker.patch.object(metadata0, 'is_valid_periods',
+                        autospec=True, return_value=False)
+    mocker.patch.object(metadata0, 'dump',
+                        autospec=True, return_value='dump0')
+    
+    metadata1 = StationMetadata(0)
+    mocker.patch.object(metadata1, 'location_count',
+                        autospec=True, return_value=0)
+    mocker.patch.object(metadata1, 'is_valid_periods',
+                        autospec=True, return_value=False)
+    mocker.patch.object(metadata1, 'dump',
+                        autospec=True, return_value='dump1')
+
+    metadatas = [metadata0, metadata1]
+
+    configuration = mocker.MagicMock()    
+    collector = Collector(configuration)
+    metadata2 = StationMetadata(0)
+    mocker.patch.object(collector, 'earliest_station',
+                        autospec=True, return_value=metadata2)
+     
+    collector.collect_statistics(metadatas)
+    
+    collector.earliest_station.assert_called_once()
+
+
+def test_earliest_station_of_two_stations(mocker):
+
+    date_range0 = DateTimeRange(datetime(2020, 1,1), datetime(2021, 1, 1))
+    location0 = StationLocation(None, None)
+    mocker.patch.object(location0, 'period',
+                        autospec=True, return_value=date_range0)
+    metadata0 = StationMetadata(0)
+    mocker.patch.object(metadata0, 'earliest_location',
+                        autospec=True, return_value=location0)
+    
+    date_range1 = DateTimeRange(datetime(1920, 1,1), datetime(1921, 1, 1))
+    location1 = StationLocation(None, None)
+    mocker.patch.object(location1, 'period',
+                        autospec=True, return_value=date_range1)
+    metadata1 = StationMetadata(1)
+    mocker.patch.object(metadata1, 'earliest_location',
+                        autospec=True, return_value=location1)
+
+    metadatas = [metadata0, metadata1]
+
+    configuration = mocker.MagicMock()    
+    collector = Collector(configuration)
+     
+    metadata = collector.earliest_station(metadatas)
+    
+    # 1920 station is expected.
+    assert metadata == StationMetadata(1)
+    
+    assert metadata0.earliest_location.call_count == 2
+    assert metadata1.earliest_location.call_count == 2
+
+
+def test_earliest_station_with_unknown_start_date(mocker):
+
+    date_range0 = DateTimeRange(datetime(2020, 1, 1), datetime(2021, 1, 1))
+    location0 = StationLocation(None, None)
+    mocker.patch.object(location0, 'period',
+                        autospec=True, return_value=date_range0)
+    metadata0 = StationMetadata(0)
+    mocker.patch.object(metadata0, 'earliest_location',
+                        autospec=True, return_value=location0)
+    
+    # Unknown date range.
+    date_range1 = DateTimeRange(datetime(1, 1, 1), datetime(1921, 1, 1))
+    location1 = StationLocation(None, None)
+    mocker.patch.object(location1, 'period',
+                        autospec=True, return_value=date_range1)
+    metadata1 = StationMetadata(1)
+    mocker.patch.object(metadata1, 'earliest_location',
+                        autospec=True, return_value=location1)
+
+    metadatas = [metadata0, metadata1]
+
+    configuration = mocker.MagicMock()    
+    collector = Collector(configuration)
+     
+    metadata = collector.earliest_station(metadatas)
+    
+    # 2020 station is expected.
+    assert metadata == StationMetadata(1)
+    
+    assert metadata0.earliest_location.call_count == 2
+    assert metadata1.earliest_location.call_count == 2

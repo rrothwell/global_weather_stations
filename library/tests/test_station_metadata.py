@@ -14,10 +14,11 @@ from library.misc_types import spherical_coordinate
 def test_construction():
     
     NCDC = 123
-    station_metadata = StationMetadata(NCDC)
+    name = 'CHARLESTON'
+    station_metadata = StationMetadata(NCDC, name)
     
     assert station_metadata.ncdc == 123
-    assert station_metadata.name is None
+    assert station_metadata.name is 'CHARLESTON'
     assert station_metadata.COOP is None
     assert station_metadata.WBAN is None
     assert station_metadata.ICAO is None
@@ -28,16 +29,19 @@ def test_construction():
     assert station_metadata.GHCND is None
     assert len(station_metadata.locations) is 0
 
+
 def test_representation():
     NCDC = 123
-    station_metadata = StationMetadata(NCDC)
+    name = 'CHARLESTON'
+    station_metadata = StationMetadata(NCDC, name)
 
-    assert str(station_metadata) == 'NCDC: 123'  
+    assert str(station_metadata) == 'NCDC: 123, Name: CHARLESTON'  
 
     
 def test_dump():
     NCDC = 123
-    station_metadata = StationMetadata(NCDC)
+    name = 'CHARLESTON'
+    station_metadata = StationMetadata(NCDC, name)
     
     # Initial
     start_date0 = datetime(1991, 7, 3)
@@ -55,12 +59,11 @@ def test_dump():
     station_metadata.add_location(station_location0)
     station_metadata.add_location(station_location1)
     
-    expected_dump = 'NCDC: 123\n' \
+    expected_dump = 'NCDC: 123, Name: CHARLESTON\n' \
                     + '    1991-07-03 : 1992-06-02 -> (123.4, 276.3)\n' \
                     + '    1993-01-31 : 1995-08-22 -> (7.85, -146)\n'
      
-    assert station_metadata.dump() == expected_dump
-    
+    assert station_metadata.dump() == expected_dump   
 
 
 def test_equals():
@@ -71,6 +74,7 @@ def test_equals():
     
     assert station_metadata0 == station_metadata2
     assert station_metadata0 != station_metadata1
+
    
 def test_add_no_locations():
 
@@ -149,7 +153,7 @@ def test_add_two_duplicate_locations():
 
 def test_is_valid_periods_for_one_location_with_none_period():
 
-    metadata0 = StationMetadata()
+    metadata0 = StationMetadata(0)
     location0 = StationLocation(None, None)
     metadata0.add_location(location0)
 
@@ -157,8 +161,9 @@ def test_is_valid_periods_for_one_location_with_none_period():
         
     assert not result
 
+
 def test_validate_periods_for_one_location_with_inverted_period():
-    metadata0 = StationMetadata()
+    metadata0 = StationMetadata(0)
     start_date = datetime(1991, 7, 3)
     end_date = datetime(1990, 6, 2)
     period = DateTimeRange(start_date, end_date)
@@ -169,8 +174,9 @@ def test_validate_periods_for_one_location_with_inverted_period():
         
     assert not result
 
+
 def test_validate_periods_for_one_location_with_special_value_period():
-    metadata0 = StationMetadata()
+    metadata0 = StationMetadata(0)
     # Special value is year 1 to indicate begin date is unknown.
     start_date = datetime(1, 1, 1)
     end_date = datetime(1991, 6, 2)
@@ -180,8 +186,9 @@ def test_validate_periods_for_one_location_with_special_value_period():
         
     assert metadata0.is_valid_periods()
 
+
 def test_validate_periods_for_one_location_with_valid_period():
-    metadata0 = StationMetadata()
+    metadata0 = StationMetadata(0)
     start_date = datetime(1990, 7, 3)
     end_date = datetime(1991, 6, 2)
     period = DateTimeRange(start_date, end_date)
@@ -190,8 +197,9 @@ def test_validate_periods_for_one_location_with_valid_period():
         
     assert metadata0.is_valid_periods()
 
+
 def test_validate_periods_for_two_locations_with_one_valid_period():
-    metadata0 = StationMetadata()
+    metadata0 = StationMetadata(0)
 
     # Inverted date range
     start_date0 = datetime(1991, 7, 3)
@@ -209,8 +217,9 @@ def test_validate_periods_for_two_locations_with_one_valid_period():
 
     assert not metadata0.is_valid_periods()
 
+
 def test_validate_periods_for_two_locations_with_no_valid_periods():
-    metadata0 = StationMetadata()
+    metadata0 = StationMetadata(0)
 
     # Inverted date range
     start_date0 = datetime(1991, 7, 3)
@@ -228,8 +237,9 @@ def test_validate_periods_for_two_locations_with_no_valid_periods():
 
     assert not metadata0.is_valid_periods()
 
+
 def test_validate_periods_for_two_locations_with_all_valid_periods():
-    metadata0 = StationMetadata()
+    metadata0 = StationMetadata(0)
 
     # Inverted date range
     start_date0 = datetime(1990, 7, 3)
@@ -247,8 +257,9 @@ def test_validate_periods_for_two_locations_with_all_valid_periods():
 
     assert metadata0.is_valid_periods()
 
+
 def test_validate_periods_for_two_locations_checks_valid_range_order(mocker):
-    metadata0 = StationMetadata()
+    metadata0 = StationMetadata(0)
 
     # Valid date range
     start_date0 = datetime(1990, 7, 3)
@@ -273,8 +284,9 @@ def test_validate_periods_for_two_locations_checks_valid_range_order(mocker):
 
     assert result
 
+
 def test_validate_periods_for_two_locations_checks_invalid_range_order(mocker):
-    metadata0 = StationMetadata()
+    metadata0 = StationMetadata(0)
 
     # Valid date range
     start_date0 = datetime(1990, 7, 3)
@@ -298,10 +310,11 @@ def test_validate_periods_for_two_locations_checks_invalid_range_order(mocker):
     location1.is_period_valid_after_period.assert_called_once()
 
     assert not result
+
     
 def test_sort_locations_by_start_date_already_sorted(mocker):
 
-    metadata0 = StationMetadata()
+    metadata0 = StationMetadata(0)
  
     # Valid date range
     start_date0 = datetime(1990, 7, 3)
@@ -321,10 +334,11 @@ def test_sort_locations_by_start_date_already_sorted(mocker):
     metadata0.sort_locations_by_start_date()
 
     assert metadata0.locations[1].period().start_datetime >= metadata0.locations[0].period().start_datetime
+
     
 def test_sort_locations_by_start_date_already_reverse_sorted(mocker):
 
-    metadata0 = StationMetadata()
+    metadata0 = StationMetadata(0)
  
     # Valid date range
     start_date1 = datetime(2000, 7, 3)
@@ -339,10 +353,69 @@ def test_sort_locations_by_start_date_already_reverse_sorted(mocker):
     period0 = DateTimeRange(start_date0, end_date0)
     location0 = StationLocation(None, period0)
     metadata0.add_location(location0)
-    
-    
+        
     metadata0.sort_locations_by_start_date()
 
     assert metadata0.locations[1].period().start_datetime >= metadata0.locations[0].period().start_datetime
 
 
+def test_earliest_location_with_all_known_date_ranges():
+
+    # Known date range.
+    date_range0 = DateTimeRange(datetime(2020, 1, 1), datetime(2021, 1, 1))
+    location0 = StationLocation(None, date_range0)
+    
+    # Known date range.
+    date_range1 = DateTimeRange(datetime(1920, 1, 1), datetime(1921, 1, 1))
+    location1 = StationLocation(None, date_range1)
+
+    metadata = StationMetadata(1)
+    # Date ranges must be sorted earliest to latest.
+    metadata.add_location(location1)
+    metadata.add_location(location0)
+     
+    location = metadata.earliest_location()
+    
+    # 1920 station is expected.
+    assert location == location1
+
+
+def test_earliest_location_with_one_unknown_date_range():
+
+    date_range0 = DateTimeRange(datetime(2020, 1, 1), datetime(2021, 1, 1))
+    location0 = StationLocation(None, date_range0)
+    
+    # Unknown date range.
+    date_range1 = DateTimeRange(datetime(1, 1, 1), datetime(1921, 1, 1))
+    location1 = StationLocation(None, date_range1)
+
+    metadata = StationMetadata(1)
+    # Date ranges must be sorted earliest to latest.
+    metadata.add_location(location1)
+    metadata.add_location(location0)
+     
+    location = metadata.earliest_location()
+    
+    # 2020 station is expected.
+    assert location == location0
+
+
+def test_earliest_location_with_all_unknown_date_ranges():
+
+    date_range0 = DateTimeRange(datetime(1, 1, 1), datetime(2021, 1, 1))
+    location0 = StationLocation(None, date_range0)
+    
+    # Unknown date range.
+    date_range1 = DateTimeRange(datetime(1, 1, 1), datetime(1921, 1, 1))
+    location1 = StationLocation(None, date_range1)
+
+    metadata = StationMetadata(1)
+    # Date ranges must be sorted earliest to latest.
+    metadata.add_location(location1)
+    metadata.add_location(location0)
+     
+    location = metadata.earliest_location()
+    
+    # 2020 station is expected.
+    assert location is None
+    
