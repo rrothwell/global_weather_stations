@@ -70,6 +70,8 @@ def test_collect_statistics_when_one_metadata_one_location(mocker):
     metadata2 = StationMetadata(0)
     mocker.patch.object(collector, 'earliest_station',
                         autospec=True, return_value=metadata2)
+    mocker.patch.object(collector, 'retired_station_count',
+                        autospec=True, return_value=0)
    
     statistics = collector.collect_statistics(metadatas)
         
@@ -94,6 +96,8 @@ def test_collect_statistics_when_two_metadatas_two_locations(mocker):
     metadata2 = StationMetadata(0)
     mocker.patch.object(collector, 'earliest_station',
                         autospec=True, return_value=metadata2)
+    mocker.patch.object(collector, 'retired_station_count',
+                        autospec=True, return_value=2)
 
     statistics = collector.collect_statistics(metadatas)
         
@@ -434,3 +438,147 @@ def test_earliest_station_with_unknown_start_date(mocker):
     
     assert metadata0.earliest_location.call_count == 2
     assert metadata1.earliest_location.call_count == 2
+
+    
+def test_collect_statistics_calls_retired_station_count(mocker):
+   
+    metadata0 = StationMetadata(0)
+    mocker.patch.object(metadata0, 'location_count',
+                        autospec=True, return_value=0)
+    mocker.patch.object(metadata0, 'is_valid_periods',
+                        autospec=True, return_value=False)
+    mocker.patch.object(metadata0, 'dump',
+                        autospec=True, return_value='dump0')
+    
+    metadata1 = StationMetadata(0)
+    mocker.patch.object(metadata1, 'location_count',
+                        autospec=True, return_value=0)
+    mocker.patch.object(metadata1, 'is_valid_periods',
+                        autospec=True, return_value=False)
+    mocker.patch.object(metadata1, 'dump',
+                        autospec=True, return_value='dump1')
+
+    metadatas = [metadata0, metadata1]
+
+    configuration = mocker.MagicMock()    
+    collector = Collector(configuration)
+    metadata2 = StationMetadata(0)
+    mocker.patch.object(collector, 'earliest_station',
+                        autospec=True, return_value=metadata2)
+    mocker.patch.object(collector, 'retired_station_count',
+                        autospec=True, return_value=2)
+     
+    collector.collect_statistics(metadatas)
+    
+    collector.retired_station_count.assert_called_once()
+
+
+def test_retired_station_count_when_only_one(mocker):
+
+    # Retired station as it has a valid end date.
+    date_range0 = DateTimeRange(datetime(2020, 1, 1), datetime(2021, 1, 1))
+    location0 = StationLocation(None, None)
+    mocker.patch.object(location0, 'period',
+                        autospec=True, return_value=date_range0)
+    metadata0 = StationMetadata(0)
+    mocker.patch.object(metadata0, 'earliest_location',
+                        autospec=True, return_value=location0)
+    mocker.patch.object(metadata0, 'is_retired_station',
+                        autospec=True, return_value=True)
+    
+    # Continuing station as it has a special end date far into the future.
+    date_range1 = DateTimeRange(datetime(2021, 1, 1), datetime(9999, 12, 31))
+    location1 = StationLocation(None, None)
+    mocker.patch.object(location1, 'period',
+                        autospec=True, return_value=date_range1)
+    metadata1 = StationMetadata(1)
+    mocker.patch.object(metadata1, 'earliest_location',
+                        autospec=True, return_value=location1)
+    mocker.patch.object(metadata1, 'is_retired_station',
+                        autospec=True, return_value=False)
+
+    metadatas = [metadata0, metadata1]
+
+    configuration = mocker.MagicMock()    
+    collector = Collector(configuration)
+     
+    count = collector.retired_station_count(metadatas)
+    
+    assert count == 1
+    
+    assert metadata0.is_retired_station.call_count == 1
+    assert metadata1.is_retired_station.call_count == 1
+
+
+def test_retired_station_count_when_two(mocker):
+
+    # Retired station as it has a valid end date.
+    date_range0 = DateTimeRange(datetime(2020, 1, 1), datetime(2021, 1, 1))
+    location0 = StationLocation(None, None)
+    mocker.patch.object(location0, 'period',
+                        autospec=True, return_value=date_range0)
+    metadata0 = StationMetadata(0)
+    mocker.patch.object(metadata0, 'earliest_location',
+                        autospec=True, return_value=location0)
+    mocker.patch.object(metadata0, 'is_retired_station',
+                        autospec=True, return_value=True)
+    
+    # Continuing station as it has a special end date far into the future.
+    date_range1 = DateTimeRange(datetime(1921, 1, 1), datetime(2020, 1, 1))
+    location1 = StationLocation(None, None)
+    mocker.patch.object(location1, 'period',
+                        autospec=True, return_value=date_range1)
+    metadata1 = StationMetadata(1)
+    mocker.patch.object(metadata1, 'earliest_location',
+                        autospec=True, return_value=location1)
+    mocker.patch.object(metadata1, 'is_retired_station',
+                        autospec=True, return_value=True)
+
+    metadatas = [metadata0, metadata1]
+
+    configuration = mocker.MagicMock()    
+    collector = Collector(configuration)
+     
+    count = collector.retired_station_count(metadatas)
+    
+    assert count == 2
+    
+    assert metadata0.is_retired_station.call_count == 1
+    assert metadata1.is_retired_station.call_count == 1
+
+
+def test_retired_station_count_when_none(mocker):
+
+    # Retired station as it has a valid end date.
+    date_range0 = DateTimeRange(datetime(2020, 1, 1), datetime(9999, 12, 31))
+    location0 = StationLocation(None, None)
+    mocker.patch.object(location0, 'period',
+                        autospec=True, return_value=date_range0)
+    metadata0 = StationMetadata(0)
+    mocker.patch.object(metadata0, 'earliest_location',
+                        autospec=True, return_value=location0)
+    mocker.patch.object(metadata0, 'is_retired_station',
+                        autospec=True, return_value=False)
+    
+    # Continuing station as it has a special end date far into the future.
+    date_range1 = DateTimeRange(datetime(1921, 1, 1), datetime(9999, 12, 31))
+    location1 = StationLocation(None, None)
+    mocker.patch.object(location1, 'period',
+                        autospec=True, return_value=date_range1)
+    metadata1 = StationMetadata(1)
+    mocker.patch.object(metadata1, 'earliest_location',
+                        autospec=True, return_value=location1)
+    mocker.patch.object(metadata1, 'is_retired_station',
+                        autospec=True, return_value=False)
+
+    metadatas = [metadata0, metadata1]
+
+    configuration = mocker.MagicMock()    
+    collector = Collector(configuration)
+     
+    count = collector.retired_station_count(metadatas)
+    
+    assert count == 0
+    
+    assert metadata0.is_retired_station.call_count == 1
+    assert metadata1.is_retired_station.call_count == 1

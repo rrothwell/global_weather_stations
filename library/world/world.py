@@ -424,7 +424,8 @@ class World(object):
             continent.add_country(country)            
             world.add_continent(continent)
         return world
-    
+
+# Modules are singletons, so this global shold be also.
 WORLD = World.build()
     
     

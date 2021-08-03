@@ -33,6 +33,7 @@ def test_report_opens_file(mocker):
         reporter.report(statistics)
         
         mock_file.assert_called_with('./emshr_statistics.txt', 'w')
+
     
 def test_report_writes_one_statistic(mocker):    
     
@@ -48,6 +49,7 @@ def test_report_writes_one_statistic(mocker):
         reporter.report(statistics)
         
         mock_file().write.assert_called_with('Station count: 234\n')
+ 
     
 def test_report_writes_two_statistics(mocker):    
     
@@ -68,3 +70,17 @@ def test_report_writes_two_statistics(mocker):
             call('Location count: 98765\n')
         ]
         mock_file().write.assert_has_calls(calls)
+
+
+def test_report_defines_sort_order(mocker): 
+    configuration = mocker.MagicMock()    
+
+    reporter = Reporter(configuration)
+    
+    assert reporter.ordering == [ \
+            ('station_count', 'Station count: '),
+            ('location_count', 'Location count: '),
+            ('valid_period_count', 'Valid period count: '),
+            ('earliest_station', 'Earliest station: ...\n'),
+            ('retired_station_count', 'Retired station count: ')
+        ]

@@ -21,7 +21,8 @@ class Reporter(object):
             ('station_count', 'Station count: '),
             ('location_count', 'Location count: '),
             ('valid_period_count', 'Valid period count: '),
-            ('earliest_station', 'Earliest station: ...\n')
+            ('earliest_station', 'Earliest station: ...\n'),
+            ('retired_station_count', 'Retired station count: ')
         ]
 
     def report(self, statistics: dict):

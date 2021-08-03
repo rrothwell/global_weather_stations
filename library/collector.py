@@ -28,6 +28,9 @@ class Collector(object):
         dated_metadatas = filter(lambda metadata:metadata.earliest_location(), metadatas)
         earliest_metadata = min(dated_metadatas, key=lambda metadata:metadata.earliest_location().period().start_datetime)
         return earliest_metadata
+    
+    def retired_station_count(self, metadatas):
+        return sum([1 if metadata.is_retired_station() else 0 for metadata in metadatas]) 
 
     def collect_statistics(self, metadatas: list):
         logger = logging.getLogger(__name__)
@@ -39,6 +42,7 @@ class Collector(object):
         earliest_station = self.earliest_station(metadatas)
         # statistics['earliest_station'] = str(earliest_station) + ',' + str(earliest_station.location)
         statistics['earliest_station'] = earliest_station.dump()
+        statistics['retired_station_count'] = self.retired_station_count(metadatas)
 
         failure_count = 1
         for metadata in metadatas:

@@ -7,6 +7,9 @@ from datetime import datetime
 from datetimerange import DateTimeRange
 
 from library.station_location import StationLocation
+from pickle import TRUE
+
+FAR_FUTURE_DATE = datetime(9999, 12, 31)
 
 class StationMetadata(object):
     '''
@@ -111,3 +114,9 @@ class StationMetadata(object):
                 found_location = location
                 break;
         return found_location
+    
+    def is_retired_station(self):
+        is_retired = True
+        if  len(self.locations) > 0:       
+            is_retired = self.locations[-1].period().end_datetime != FAR_FUTURE_DATE
+        return is_retired

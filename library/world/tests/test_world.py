@@ -11,6 +11,7 @@ from library.world.state import State
 from library.world.world import WORLD
 import library.world.world as world_module
 
+
 def test_construction():
     world = World()
     

@@ -7,7 +7,7 @@ Created on 22 Jun. 2021
 from datetime import datetime
 from datetimerange import DateTimeRange 
 
-from library.station_metadata import StationMetadata
+from library.station_metadata import StationMetadata, FAR_FUTURE_DATE
 from library.station_location import StationLocation
 from library.misc_types import spherical_coordinate
 
@@ -418,4 +418,46 @@ def test_earliest_location_with_all_unknown_date_ranges():
     
     # 2020 station is expected.
     assert location is None
+
+
+def test_is_retired_station_when_ongoing():
+
+    # Ongoing station
+    date_range0 = DateTimeRange(datetime(2021, 1, 1), FAR_FUTURE_DATE)
+    location0 = StationLocation(None, date_range0)
+    
+    # Station origin
+    date_range1 = DateTimeRange(datetime(1921, 1, 1), datetime(2021, 1, 1))
+    location1 = StationLocation(None, date_range1)
+
+    metadata = StationMetadata(1)
+    # Date ranges must be sorted earliest to latest.
+    metadata.add_location(location1)
+    metadata.add_location(location0)
+     
+    is_retired = metadata.is_retired_station()
+    
+    # 2020 station is expected.
+    assert not is_retired
+
+
+def test_is_retired_station_when_retired():
+
+    # Ongoing station
+    date_range0 = DateTimeRange(datetime(2021, 1, 1), datetime(2021, 12, 31))
+    location0 = StationLocation(None, date_range0)
+    
+    # Station origin
+    date_range1 = DateTimeRange(datetime(1921, 1, 1), datetime(2021, 1, 1))
+    location1 = StationLocation(None, date_range1)
+
+    metadata = StationMetadata(1)
+    # Date ranges must be sorted earliest to latest.
+    metadata.add_location(location1)
+    metadata.add_location(location0)
+     
+    is_retired = metadata.is_retired_station()
+    
+    # 2020 station is expected.
+    assert is_retired
     
