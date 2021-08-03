@@ -9,12 +9,14 @@ class State(object):
     classdocs
     '''
 
-    def __init__(self, name, code):
+    def __init__(self, name, code, is_contiguous=True, category='state'):
         '''
         Constructor
         '''
         self.name = name 
         self.code = code
+        self.is_contiguous = is_contiguous
+        self.category = category
 
     def __repr__(self):
         return 'State: ' + str(self.code)

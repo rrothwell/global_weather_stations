@@ -44,6 +44,12 @@ This is intended for distributing the software within a docker container.
 ## Status
 
 This application is now functional and passes all tests.
+Checkout the global_weather_stations project and then execute the code as follows:
+``` bash
+cd ${workspace_loc}:global_weather_stations
+python ./station_statistics/command.py --input_file_path=../station_metadata_originals/emshr_lite.txt --output_file_path=../station_metadata/emshr_lite_stats.txt
+
+```
 Typical results from executing the app are:
 ```
 Station count: 144597

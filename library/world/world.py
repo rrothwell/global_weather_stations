@@ -8,6 +8,7 @@ import csv
 
 from library.world.continent import Continent
 from library.world.country import Country
+from library.world.state import State
     
 '''
 Fields:
@@ -279,6 +280,72 @@ WORLD_CSV = (
 'Asia,AS,Spratly Islands,XS,,\n'
 )
 
+'''
+US states, districts, and outlying areas
+The fields are:
+contiguous_usa, category, code, name
+'''
+US_STATES_CSV = (
+'True,state,AL,Alabama\n'
+'False,state,AK,Alaska\n'
+'False,"outlying area",AS,"American Samoa"\n' #see also separate country code entry under AS.
+'True,state,AZ,Arizona\n'
+'True,state,AR,Arkansas\n'
+'True,state,CA,California\n'
+'True,state,CO,Colorado\n'
+'True,state,CT,Connecticut\n'
+'True,state,DE,Delaware\n'
+'True,district,DC,"District of Columbia"\n'
+'True,state,FL,Florida\n'
+'True,state,GA,Georgia\n'
+'False,"outlying area",GU,Guam\n' # See also separate country code entry under GU.
+'False,state,HI,Hawaii\n'
+'True,state,ID,Idaho\n'
+'True,state,IL,Illinois\n'
+'True,state,IN,Indiana\n'
+'True,state,IA,Iowa\n'
+'True,state,KS,Kansas\n'
+'True,state,KY,Kentucky\n'
+'True,state,LA,Louisiana\n'
+'True,state,ME,Maine\n'
+'True,state,MD,Maryland\n'
+'True,state,MA,Massachusetts\n'
+'True,state,MI,Michigan\n'
+'True,state,MN,Minnesota\n'
+'True,state,MS,Mississippi\n'
+'True,state,MO,Missouri\n'
+'True,state,MT,Montana\n'
+'True,state,NE,Nebraska\n'
+'True,state,NV,Nevada\n'
+'True,state,NH,"New Hampshire"\n'
+'True,state,NJ,"New Jersey"\n'
+'True,state,NM,"New Mexico"\n'
+'True,state,NY,"New York"\n'
+'True,state,NC,"North Carolina"\n'
+'True,state,ND,"North Dakota"\n'
+'False,"outlying area",MP,"Northern Mariana Islands"\n' # See also separate country code entry under MP.
+'True,state,OH,Ohio\n'
+'True,state,OK,Oklahoma\n'
+'True,state,OR,Oregon\n'
+'True,state,PA,Pennsylvania\n'
+'False,"outlying area",PR,"Puerto Rico"\n' # See also separate country code entry under PR.
+'True,state,RI,"Rhode Island"\n'
+'True,state,SC,"South Carolina"\n'
+'True,state,SD,"South Dakota"\n'
+'True,state,TN,Tennessee\n'
+'True,state,TX,Texas\n'
+'False,"outlying area",UM,"United States Minor Outlying Islands"\n' # See also separate country code entry under UM.
+'True,state,UT,Utah\n'
+'True,state,state,VT,Vermont\n'
+'False,"outlying area",VI,"Virgin Islands, U.S."\n' # See also separate country code entry under VI.
+'True,state,VA,Virginia\n'
+'True,state,WA,Washington\n'
+'True,state,WV,"West Virginia"\n'
+'True,state,WI,Wisconsin\n'
+'True,state,WY,Wyoming\n'
+)
+
+
 def parse_world_csv(world_csv):
     country_record = []
     file_handle = StringIO(world_csv)
@@ -286,6 +353,16 @@ def parse_world_csv(world_csv):
     for row in reader:
         country_record.append(row)
     return country_record
+
+
+def parse_us_states_csv(us_state_csv):
+    state_record = []
+    file_handle = StringIO(us_state_csv)
+    reader = csv.reader(file_handle, delimiter=',', dialect='excel')
+    for row in reader:
+        row[0] = row[0] == 'True'
+        state_record.append(row)
+    return state_record
 
 
 class World(object):
@@ -333,6 +410,16 @@ class World(object):
             number_str = country_record[5]
             country_number = int(number_str) if number_str != '' else 0
             country = Country(country_name, country_code_2, country_code_3, country_number)
+            
+            if country_code_2 == 'US':
+                state_records = parse_us_states_csv(US_STATES_CSV)
+                for state_record in state_records:
+                    is_contiguous = state_record[0]
+                    state_category = state_record[1]
+                    state_code = state_record[2]
+                    state_name = state_record[3]
+                    state = State(state_name, state_code, is_contiguous, state_category)
+                    country.add_state(state)
 
             continent.add_country(country)            
             world.add_continent(continent)

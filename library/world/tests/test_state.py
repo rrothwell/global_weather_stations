@@ -12,6 +12,17 @@ def test_construction():
     
     assert state.name == 'Victoria'
     assert state.code == 'VIC'
+    assert state.is_contiguous
+    assert state.category == 'state'
+
+
+def test_construction_non_contiguous():
+    state = State('Victoria', 'VIC', False, 'territory', )
+    
+    assert state.name == 'Victoria'
+    assert state.code == 'VIC'
+    assert not state.is_contiguous
+    assert state.category == 'territory'
 
 
 def test_representation():
