@@ -27,7 +27,7 @@ class LoadEMSHRLite(object):
     """
     
     SELECTED_FIELDS = [
-        'NCDC', 'BEG_DT', 'END_DT', 'STATION_NAME', 'LAT_DEC', 'LON_DEC'
+        'NCDC', 'BEG_DT', 'END_DT', 'STATION_NAME', 'CC', 'LAT_DEC', 'LON_DEC', 'TYPE'
     ]
 
 
@@ -107,21 +107,27 @@ class LoadEMSHRLite(object):
         """
         Split the bytes array from the file
         into fields and keep the fields of interest.
-        The field values are all strings adn are returned
+        The field values are all strings and are returned
         in a dictionary key by column name.
         The column names come from the headings line for the file.
         Organsation of line:
-            'NCDC', 'BEG_DT', 'END_DT', 'STATION_NAME'
+            'NCDC', 'BEG_DT', 'END_DT', 'STATION_NAME', 'CC', 'TYPE'
 
         """
         fields = column_layout.parse_line(line)
-        ncdc = int(fields['NCDC'].strip())        
+        ncdc = int(fields['NCDC'].strip())
+        network_str = fields['TYPE'].strip()
+        network_str = network_str if network_str != '' else '<UNKNOWN>'
+        networks = network_str.split(',')       
+        country_code = fields['CC'].strip()       
 
         metadata_update = None
         if metadata.ncdc == ncdc:
             metadata_update = metadata
         else:
             metadata_update = StationMetadata(ncdc)
+            metadata_update.add_networks(networks)
+            metadata_update.set_country_code(country_code)
  
         # Use the latest station name if one exists.
         # It is assumed the station records are ordered by date.

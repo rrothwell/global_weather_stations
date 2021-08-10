@@ -7,8 +7,6 @@ from io import StringIO
 import csv
 
 from library.world.continent import Continent
-from library.world.country import Country
-from library.world.state import State
     
 '''
 Fields:
@@ -394,6 +392,34 @@ class World(object):
         key = continent.code
         self.continents[key] = continent
 
+    def get_continent(self, continent_name, continent_code):
+        if continent_code in self.continents:
+            continent = self.continents[continent_code]
+        else:
+            continent = Continent(continent_name, continent_code)
+            self.add_continent(continent)
+        return continent
+
+
+    @staticmethod
+    def country_data_by_code(country_code):
+        country = None
+        for continent in WORLD.continents.values():
+            if country_code in continent.countries:
+                country = continent.countries[country_code]
+                break
+        return country
+
+
+    @staticmethod
+    def state_data_by_codes(country_code, state_code):
+        state = None 
+        country = World.country_data_by_code(country_code)
+        if state_code in country.states:
+            state = country.states[state_code]
+        return state
+    
+    
     @staticmethod
     def build():
         world = World()
@@ -402,14 +428,14 @@ class World(object):
 
             continent_name = country_record[0]
             continent_code = country_record[1]
-            continent = Continent(continent_name, continent_code)
+            continent = world.get_continent(continent_name, continent_code)
             
             country_name = country_record[2]
             country_code_2 = country_record[3]
             country_code_3 = country_record[4]
             number_str = country_record[5]
             country_number = int(number_str) if number_str != '' else 0
-            country = Country(country_name, country_code_2, country_code_3, country_number)
+            country = continent.get_country(country_name, country_code_2, country_code_3, country_number)
             
             if country_code_2 == 'US':
                 state_records = parse_us_states_csv(US_STATES_CSV)
@@ -418,11 +444,7 @@ class World(object):
                     state_category = state_record[1]
                     state_code = state_record[2]
                     state_name = state_record[3]
-                    state = State(state_name, state_code, is_contiguous, state_category)
-                    country.add_state(state)
-
-            continent.add_country(country)            
-            world.add_continent(continent)
+                    country.get_state(state_code, state_name, is_contiguous, state_category)
         return world
 
 # Modules are singletons, so this global shold be also.

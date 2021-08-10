@@ -186,7 +186,9 @@ def test_extract_metadata_when_new_station(mocker):
         'NCDC': '123', 
         'BEG_DT': '19490713', 
         'END_DT': '19501115', 
-        'STATION_NAME': 'New York Airport'
+        'STATION_NAME': 'New York Airport',
+        'TYPE': 'COOP,USHCN',
+        'CC': 'US'
     }    
     mocker.patch('library.column_layout.ColumnLayout._line_format', 
         autospec=True, return_value='')    
@@ -209,6 +211,8 @@ def test_extract_metadata_when_new_station(mocker):
     
     assert metadata_update.ncdc == 123
     assert metadata_update.name == 'New York Airport'
+    assert metadata_update.country_code == 'US'
+    assert metadata_update.networks == {'COOP','USHCN'}
     assert len(metadata_update.locations) == 1
  
         
@@ -226,7 +230,9 @@ def test_extract_metadata_when_old_station(mocker):
         'NCDC': '123', 
         'BEG_DT': '19490713', 
         'END_DT': '19501115', 
-        'STATION_NAME': 'New York Spaceport'
+        'STATION_NAME': 'New York Spaceport',
+        'TYPE': 'COOP,USHCN',
+        'CC': 'US'
     }
     mocker.patch('library.column_layout.ColumnLayout._line_format', 
         autospec=True, return_value='')    

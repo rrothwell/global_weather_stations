@@ -7,7 +7,6 @@ from datetime import datetime
 from datetimerange import DateTimeRange
 
 from library.station_location import StationLocation
-from pickle import TRUE
 
 FAR_FUTURE_DATE = datetime(9999, 12, 31)
 
@@ -36,7 +35,9 @@ class StationMetadata(object):
         self.WMO = None
         self.TRANS = None
         self.GHCND = None
-        self.set_locations([])        
+        self.set_locations([])
+        self.set_networks(set())
+        self.set_country_code('')        
 
     # Trying out this property stuff.
     
@@ -49,6 +50,23 @@ class StationMetadata(object):
 
     def location_count(self):
         return len(self.locations)
+    
+    @property
+    def networks(self):
+        return self.__networks        
+
+    def set_networks(self, networks):
+        self.__networks = networks
+
+    def network_count(self):
+        return len(self.networks)
+
+    @property
+    def country_code(self):
+        return self.__country_code        
+
+    def set_country_code(self, country_code):
+        self.__country_code = country_code
             
     # Trying out this base behavior stuff.
 
@@ -80,6 +98,10 @@ class StationMetadata(object):
             if station_location.period() == previous_station.period():
                 self.locations.pop()
         self.locations.append(station_location)
+       
+    def add_networks(self, networks):
+        for network in networks:
+            self.networks.add(network)
         
     def is_valid_periods(self) -> bool:
         result = True

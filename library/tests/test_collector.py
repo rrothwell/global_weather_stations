@@ -582,3 +582,64 @@ def test_retired_station_count_when_none(mocker):
     
     assert metadata0.is_retired_station.call_count == 1
     assert metadata1.is_retired_station.call_count == 1
+
+    
+def test_collect_statistics_calls_available_networks(mocker):
+   
+    metadata0 = StationMetadata(0)
+    mocker.patch.object(metadata0, 'location_count',
+                        autospec=True, return_value=0)
+    mocker.patch.object(metadata0, 'is_valid_periods',
+                        autospec=True, return_value=False)
+    mocker.patch.object(metadata0, 'dump',
+                        autospec=True, return_value='dump0')
+    
+    metadata1 = StationMetadata(0)
+    mocker.patch.object(metadata1, 'location_count',
+                        autospec=True, return_value=0)
+    mocker.patch.object(metadata1, 'is_valid_periods',
+                        autospec=True, return_value=False)
+    mocker.patch.object(metadata1, 'dump',
+                        autospec=True, return_value='dump1')
+
+    metadatas = [metadata0, metadata1]
+
+    configuration = mocker.MagicMock()    
+    collector = Collector(configuration)
+    metadata2 = StationMetadata(0)
+    mocker.patch.object(collector, 'earliest_station',
+                        autospec=True, return_value=metadata2)
+    mocker.patch.object(collector, 'retired_station_count',
+                        autospec=True, return_value=2)
+    networks = {'COOP', 'ACORN', 'USHCN'}
+    mocker.patch.object(collector, 'available_networks',
+                        autospec=True, return_value=networks)
+     
+    collector.collect_statistics(metadatas)
+    
+    collector.available_networks.assert_called_once()
+
+
+def test_available_networks(mocker):
+
+    networks0 = {'COOP', 'ACORN'}
+    metadata0 = mocker.Mock()
+    networks_property0 = mocker.PropertyMock(return_value=networks0)
+    type(metadata0).networks = networks_property0
+    
+    networks1 = {'COOP', 'USHCN'}
+    metadata1 = mocker.Mock()
+    networks_property1 = mocker.PropertyMock(return_value=networks1)
+    type(metadata1).networks = networks_property1
+
+    metadatas = [metadata0, metadata1]
+
+    configuration = mocker.MagicMock()    
+    collector = Collector(configuration)
+     
+    networks = collector.available_networks(metadatas)
+    
+    assert networks == 'ACORN, COOP, USHCN'
+    
+    networks_property0.assert_called_once()
+    networks_property1.assert_called_once()

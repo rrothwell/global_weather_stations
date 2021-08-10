@@ -4,6 +4,9 @@ Created on 1 Aug. 2021
 @author: richardrothwell
 '''
 
+from library.world.country import Country
+
+
 class Continent(object):
     '''
     classdocs
@@ -33,3 +36,13 @@ class Continent(object):
     def add_country(self, country):
         key = country.code_2
         self.countries[key] = country
+        
+    def get_country(self, country_name, country_code_2, country_code_3, country_number):
+        if country_code_2 in self.countries:
+            country = self.countries[country_code_2]
+        else:
+            country = Country(country_name, country_code_2, country_code_3, country_number)
+            self.add_country(country)
+        return country
+
+

@@ -141,6 +141,33 @@ def test_build(mocker):
                                     'NI',
                                     'NIC',
                                     558)
+    world_csv = (
+        'North America,NA,United States of America,US,USA,840\n'
+    )
+
+    mocker.patch.object(world_module, 'WORLD_CSV', world_csv)
+
+    world = World.build()
+
+    assert len(world.continents) == 1
+    
+    north_america = world.continents['NA']
+    assert north_america == Continent('North America', 'NA')
+    assert len(north_america.countries) == 1
+    assert north_america.countries['US'] == Country(
+                                        'United States of America',
+                                        'US',
+                                        'USA',
+                                        840
+                                    )
+    # US has 50 states, 1 district and 6 outlying areas.
+    assert len(north_america.countries['US'].states) == 57
+    assert north_america.countries['US'].states['AS'] == State(
+                                        'American Samoa',
+                                        'AS',
+                                        False,
+                                        'outlying area'
+                                    )
 
        
 def test_build_usa(mocker): 
@@ -171,4 +198,61 @@ def test_build_usa(mocker):
                                         False,
                                         'outlying area'
                                     )
+
+
+def test_country_data_by_code(mocker):
+   
+    nz = Country('New Zealand', 'NZ')
+    oceania = Continent('Oceania', 'OC')
+    oceania.add_country(nz)
     
+    ni = Country("Nicaragua', Republic of", 'NI')
+    north_america = Continent('North America', 'NA')
+    north_america.add_country(ni)
+
+    world =World()
+    world.continents = {
+        'OC': oceania,
+        'NA': north_america
+    }
+
+    mocker.patch.object(world_module, 'WORLD', world)
+
+    country = World.country_data_by_code('NI')    
+    assert country == Country("Nicaragua', Republic of", 'NI')
+
+    country = World.country_data_by_code('NZ')    
+    assert country == Country('New Zealand', 'NZ')
+
+
+def test_state_data_by_codes(mocker):
+
+    masaya = State('Masaya', 'MS')    
+    nicaragua = Country("Nicaragua', Republic of", 'NI')
+    nicaragua.add_state(masaya)
+
+    country_data_by_code = mocker.patch.object(World, 'country_data_by_code',
+                 return_value=nicaragua)
+    
+    state = World.state_data_by_codes('NI', 'MS')
+    
+    assert state == State('Masaya', 'MS')
+    country_data_by_code.assert_called_once_with('NI')
+
+
+def test_world_country_data_by_code():
+    
+    country = World.country_data_by_code('US')
+    
+    assert country == Country('United States', 'US')
+    assert len(country.states) == 57
+
+
+def test_world_state_data_by_codes():
+    
+    state = World.state_data_by_codes('US', 'AK')
+    
+    assert state == State('Alaska', 'AK')
+    assert state.is_contiguous == False
+    assert state.category == 'state'
+ 

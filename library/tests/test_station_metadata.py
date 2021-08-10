@@ -28,6 +28,7 @@ def test_construction():
     assert station_metadata.TRANS is None
     assert station_metadata.GHCND is None
     assert len(station_metadata.locations) is 0
+    assert len(station_metadata.networks) is 0
 
 
 def test_representation():
@@ -460,4 +461,36 @@ def test_is_retired_station_when_retired():
     
     # 2020 station is expected.
     assert is_retired
+
+
+def test_set_networks():
     
+    metadata = StationMetadata(1)
+    
+    networks = {'COOP', 'USHCN'}
+    
+    metadata.set_networks(networks)
+    
+    assert 'COOP' in metadata.networks
+    assert 'USHCN' in metadata.networks
+    
+
+def test_add_networks():
+    
+    metadata = StationMetadata(1)
+    
+    networks = ['COOP', 'USHCN']
+    
+    metadata.add_networks(networks)
+    
+    assert 'COOP' in metadata.networks
+    assert 'USHCN' in metadata.networks
+    
+
+def test_set_country_code():
+    
+    metadata = StationMetadata(1)
+    
+    metadata.set_country_code('US')
+    
+    assert metadata.country_code == 'US'

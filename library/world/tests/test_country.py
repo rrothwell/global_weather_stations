@@ -21,7 +21,6 @@ def test_construction():
     assert len(country.states) == 0
 
 
-
 def test_add_one_state(): 
     
     country = Country('Australia', 'AU', 'AUS', '36')
@@ -56,6 +55,62 @@ def test_add_two_different_states():
     assert len(country.states) == 2
     assert country.states['VIC'] == State('Victoria', 'VIC')
     assert country.states['NSW'] == State('New South Wales', 'NSW')
+
+
+
+def test_add_one_network(): 
+    
+    country = Country('Australia', 'AU', 'AUS', '36')
+    
+    country.add_network('ACORN') 
+    
+    assert len(country.networks) == 1
+    assert 'ACORN' in country.networks
+
+
+def test_add_same_network_twice(): 
+    country = Country('Australia', 'AU', 'AUS', '36')
+    
+    country.add_network('ACORN') 
+    country.add_network('ACORN') 
+    
+    assert len(country.networks) == 1
+    assert 'ACORN' in country.networks
+
+
+def test_add_two_different_networks(): 
+    
+    country = Country('Australia', 'AU', 'AUS', '36')
+    
+    country.add_network('ACORN') 
+    country.add_network('ACORN1') 
+    
+    assert len(country.networks) == 2
+    assert 'ACORN' in country.networks
+    assert 'ACORN1' in country.networks
+
+
+def test_add_one_network_as_networks_at_once(): 
+    
+    country = Country('Australia', 'AU', 'AUS', '36')
+    
+    networks = 'ACORN'.split(',')
+    country.add_networks(networks) 
+    
+    assert len(country.networks) == 1
+    assert 'ACORN' in country.networks
+
+
+def test_add_two_different_networks_as_networks_at_once(): 
+    
+    country = Country('Australia', 'AU', 'AUS', '36')
+    
+    networks = 'ACORN,ACORN1'.split(',')
+    country.add_networks(networks) 
+    
+    assert len(country.networks) == 2
+    assert 'ACORN' in country.networks
+    assert 'ACORN1' in country.networks
 
 
 def test_representation():

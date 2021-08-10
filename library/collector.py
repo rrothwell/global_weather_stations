@@ -31,6 +31,12 @@ class Collector(object):
     
     def retired_station_count(self, metadatas):
         return sum([1 if metadata.is_retired_station() else 0 for metadata in metadatas]) 
+    
+    def available_networks(self, metadatas: list) -> set:
+        networks = set()
+        for metadata in metadatas:
+            networks.update(metadata.networks)
+        return ', '.join(sorted(networks))
 
     def collect_statistics(self, metadatas: list):
         logger = logging.getLogger(__name__)
@@ -40,9 +46,9 @@ class Collector(object):
         statistics['location_count'] = sum([metadata.location_count() for metadata in metadatas]) 
         statistics['valid_period_count'] = sum([1 if metadata.is_valid_periods() else 0 for metadata in metadatas])        
         earliest_station = self.earliest_station(metadatas)
-        # statistics['earliest_station'] = str(earliest_station) + ',' + str(earliest_station.location)
         statistics['earliest_station'] = earliest_station.dump()
         statistics['retired_station_count'] = self.retired_station_count(metadatas)
+        statistics['available_networks'] = self.available_networks(metadatas)
 
         failure_count = 1
         for metadata in metadatas:
